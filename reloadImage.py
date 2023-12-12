@@ -1,6 +1,11 @@
 import os
+
 from PIL import Image
 
+
+#获取路径
+
+#获取指定下的所有文件名称
 def get_image_files(folder_path):
     image_files = []
 

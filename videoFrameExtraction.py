@@ -1,5 +1,10 @@
-import cv2
 import os
+
+import cv2
+
+
+#视频抽帧
+
 
 def extract_frames(video_path, output_folder):
     # 创建输出文件夹

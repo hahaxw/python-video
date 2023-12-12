@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import cv2
-import numpy as np
+
 
 # Hash值对比
 def cmpHash(hash1, hash2,shape=(10,10)):

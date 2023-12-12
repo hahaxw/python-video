@@ -1,14 +1,6 @@
 import os
-import videoFrameExtraction
-import reloadImage
-import imageHash
-from concurrent.futures import ThreadPoolExecutor
-import numpy as np
-
-from flask import Flask, render_template, request
-import os
-from concurrent.futures import ThreadPoolExecutor
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 from flask import Flask, render_template, request
@@ -17,9 +9,9 @@ import imageHash
 import reloadImage
 import videoFrameExtraction
 
-executor = ThreadPoolExecutor(max_workers=32)
+executor = ThreadPoolExecutor(max_workers=16)
 
-executor_sub = ThreadPoolExecutor(max_workers=64)
+executor_sub = ThreadPoolExecutor(max_workers=20)
 
 app = Flask(__name__)
 
@@ -86,9 +78,9 @@ def upload_file():
 
         result_max = max(results)
         result_min = min(results)
-        result_avg = np.mean(results)
+        result_avg = round(np.mean(results), 2)
         end_time = time.time()
-        elapsed_time = end_time - start_time
+        elapsed_time = round(end_time - start_time, 2)
         print(f"对比结果平均值：{result_avg} 最大值：{result_max} 最小值：{result_min} 耗时：{elapsed_time}")
         message_result = "对比结果平均值：{} 最大值：{} 最小值：{} 耗时：{}".format(result_avg, result_max, result_min, elapsed_time)
         return render_template('success.html', message = message_result)
