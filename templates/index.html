@@ -10,10 +10,16 @@
     <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
         <p>原视频：<input type="file" name="primaryMultipartFile" accept=".mp4, .avi, .mkv"></p>
         <p>剪辑后的视频：<input type="file" name="processMultipartFile" accept=".mp4, .avi, .mkv"></p>
-        <p><input type="submit" value="Upload"></p>
+        <p><input type="submit" value="Upload" onclick="showWaitPage()"></p>
     </form>
-    {% if message %}
-        <p>{{ message }}</p>
-    {% endif %}
+    <div id="waitPage" style="display: none;">
+        <p>请等待，文件正在上传中...</p>
+    </div>
+
+    <script>
+        function showWaitPage() {
+            document.getElementById('waitPage').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
