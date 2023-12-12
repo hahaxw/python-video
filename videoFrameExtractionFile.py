@@ -16,18 +16,22 @@ executor_sub = ThreadPoolExecutor(max_workers=64)
 
 app = Flask(__name__)
 
+#端口号
+APP_PORT = 5000
+app.config['APP_PORT'] = APP_PORT
+
 # 原视频保存路径
-PRIMARY_FILE_UPLOAD_FOLDER = '\\video\\python\\primaryFile\\video\\'
+PRIMARY_FILE_UPLOAD_FOLDER = '\\video\\python_{}\\primaryFile\\video\\'.format(APP_PORT)
 app.config['PRIMARY_FILE_UPLOAD_FOLDER'] = PRIMARY_FILE_UPLOAD_FOLDER
 # 原视频图片保存路径
-PRIMARY_FILE_UPLOAD_FOLDER_IMAGE = '\\video\\python\\primaryFile\\image\\'
+PRIMARY_FILE_UPLOAD_FOLDER_IMAGE = '\\video\\python_{}\\primaryFile\\image\\'.format(APP_PORT)
 app.config['PRIMARY_FILE_UPLOAD_FOLDER_IMAGE'] = PRIMARY_FILE_UPLOAD_FOLDER_IMAGE
 
 # 剪辑后的视频保存路径
-PROCESS_FILE_UPLOAD_FOLDER = '\\video\\python\\processFile\\video\\'
+PROCESS_FILE_UPLOAD_FOLDER = '\\video\\python_{}\\processFile\\video\\'.format(APP_PORT)
 app.config['PROCESS_FILE_UPLOAD_FOLDER'] = PROCESS_FILE_UPLOAD_FOLDER
 # 剪辑后视频图片保存路径
-PROCESS_FILE_UPLOAD_FOLDER_IMAGE = '\\video\\python\\processFile\\image\\'
+PROCESS_FILE_UPLOAD_FOLDER_IMAGE = '\\video\\python_{}\\processFile\\image\\'.format(APP_PORT)
 app.config['PROCESS_FILE_UPLOAD_FOLDER_IMAGE'] = PROCESS_FILE_UPLOAD_FOLDER_IMAGE
 
 # 设置允许上传的文件类型
@@ -183,4 +187,4 @@ def create_folder_if_not_exists(folder_path):
         print(f"Folder '{folder_path}' already exists.")
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=APP_PORT)
