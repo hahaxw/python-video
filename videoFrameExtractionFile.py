@@ -11,7 +11,7 @@ import videoFrameExtraction
 
 executor = ThreadPoolExecutor(max_workers=16)
 
-executor_sub = ThreadPoolExecutor(max_workers=20)
+executor_sub = ThreadPoolExecutor(max_workers=64)
 
 app = Flask(__name__)
 
