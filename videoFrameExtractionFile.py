@@ -16,7 +16,7 @@ executor_sub = ThreadPoolExecutor(max_workers=64)
 
 app = Flask(__name__)
 
-#端口号
+# 端口号
 APP_PORT = 5000
 app.config['APP_PORT'] = APP_PORT
 
@@ -64,16 +64,16 @@ def upload_file():
                 return render_template('index.html', message='剪辑后的视频无文件')
 
             # 原视频文件
-            file = request.files['primaryMultipartFile']
-            upload_primary_file(file)
-            video_path = app.config['PRIMARY_FILE_UPLOAD_FOLDER'] + file.filename
+            primary_file = request.files['primaryMultipartFile']
+            upload_primary_file(primary_file)
+            video_path = app.config['PRIMARY_FILE_UPLOAD_FOLDER'] + primary_file.filename
             primary_output_folder = app.config['PRIMARY_FILE_UPLOAD_FOLDER_IMAGE']
             videoFrameExtraction.extract_frames(video_path, primary_output_folder)
 
             # 剪辑后的视频文件
-            file = request.files['processMultipartFile']
-            upload_process_file(file)
-            video_path = app.config['PROCESS_FILE_UPLOAD_FOLDER'] + file.filename
+            process_file = request.files['processMultipartFile']
+            upload_process_file(process_file)
+            video_path = app.config['PROCESS_FILE_UPLOAD_FOLDER'] + process_file.filename
             process_output_folder = app.config['PROCESS_FILE_UPLOAD_FOLDER_IMAGE']
             videoFrameExtraction.extract_frames(video_path, process_output_folder)
 
@@ -100,10 +100,13 @@ def upload_file():
             end_time = time.time()
             elapsed_time = round(end_time - start_time, 2)
             print(f"对比结果平均值：{result_avg} 最大值：{result_max} 最小值：{result_min} 耗时：{elapsed_time}")
-            message_result = "上传文件成功！ 对比结果平均值：{} 最大值：{} 最小值：{} 耗时：{}".format(result_avg,
-                                                                                                  result_max,
-                                                                                                  result_min,
-                                                                                                  elapsed_time)
+            message_result = "原视频{} 剪辑后的视频{} 上传文件处理成功！ 对比结果平均值：{} 最大值：{} 最小值：{} 耗时：{}".format(
+                primary_file.filename,
+                process_file.filename,
+                result_avg,
+                result_max,
+                result_min,
+                elapsed_time)
             return render_template('success.html', message=message_result)
         except Exception as e:
             print(f"视频对比出现异常：{e}")
@@ -185,6 +188,7 @@ def create_folder_if_not_exists(folder_path):
             print(f"Error creating folder '{folder_path}': {e}")
     else:
         print(f"Folder '{folder_path}' already exists.")
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=APP_PORT)
