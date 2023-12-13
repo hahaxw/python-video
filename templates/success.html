@@ -8,5 +8,8 @@
 {% if message %}
         <p>{{ message | safe }}</p>
 {% endif %}
+
+ <!-- 返回链接 -->
+<p><a href="{{ url_for('index') }}" style="color:red;font-size:50px;">返回首页</a></p>
 </body>
 </html>
