@@ -39,6 +39,13 @@ def comparison_hash_image(primaryFileName, processFileName):
     n = cmpHash(hash1, hash2) * 100
     return n
 
+#直接使用img对象比较，预先全部读取出来，提高性能
+def comparison_hash_imread(img1, img2):
+    hash1 = dHash(cv2,img1)
+    hash2 = dHash(cv2,img2)
+    n = cmpHash(hash1, hash2) * 100
+    return n
+
 # if __name__=="__main__":
 #     n = comparison_hash_image('D:\\video\\python\\primaryFile\\image\\frame_0001.jpg', 'D:\\video\\python\\processFile\\image\\frame_0001.jpg')
 #     print('均值哈希算法相似度：', n)

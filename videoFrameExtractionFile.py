@@ -9,6 +9,7 @@ from flask import Flask, render_template, request
 import imageHash
 import reloadImage
 import videoFrameExtraction
+import cv2
 
 executor = ThreadPoolExecutor(max_workers=16)
 
@@ -81,11 +82,33 @@ def upload_file():
             primary_image_files = reloadImage.get_image_files(primary_output_folder)
             process_image_files = reloadImage.get_image_files(process_output_folder)
 
-            futures_arrays = []
+            #原视频图片
+            futures_primary = []
+            for primary_image_file in primary_image_files:
+                primary_file_name = primary_output_folder + primary_image_file
+                future = executor.submit(worker_imread, primary_file_name)
+                futures_primary.append(future)
+
+            # 剪辑后视频图片
+            futures_process = []
             for process_image_file in process_image_files:
                 process_file_name = process_output_folder + process_image_file
-                futures = executor.submit(worker_image_max_score, primary_output_folder, primary_image_files,
-                                          process_file_name)
+                future = executor_sub.submit(worker_process_imread, process_file_name)
+                futures_process.append(future)
+
+            # 原视频图片对象
+            futures_primary_images = []
+            for future in futures_primary:
+                futures_primary_images.append(future.result())
+
+            # 剪辑后视频图片对象
+            process_img_array = []
+            for future in futures_process:
+                process_img_array.append(future.result())
+
+            futures_arrays = []
+            for process_img in process_img_array:
+                futures = executor.submit(worker_image_max_score, futures_primary_images, process_img)
                 futures_arrays.append(futures)
 
             # i = 1
@@ -99,8 +122,8 @@ def upload_file():
             result_avg = round(np.mean(results), 2)
             end_time = time.time()
             elapsed_time = round(end_time - start_time, 2)
-            print(f"对比结果平均值：{result_avg} 最大值：{result_max} 最小值：{result_min} 耗时：{elapsed_time}")
-            message_result = "原视频{} 剪辑后的视频{} 上传文件处理成功！ 对比结果平均值：{} 最大值：{} 最小值：{} 耗时：{}".format(
+            print(f"对比结果平均值：{result_avg} 最大值：{result_max} 最小值：{result_min} 耗时：{elapsed_time}秒")
+            message_result = "<p style='font-size:50px;'>原视频名称：{} 剪辑后的视频名称：{} 上传文件处理成功！</p><p style='font-size:50px;'>对比结果平均值：{} 最大值：{} 最小值：{} 耗时：{}秒</p>".format(
                 primary_file.filename,
                 process_file.filename,
                 result_avg,
@@ -126,8 +149,6 @@ def upload_primary_file(file):
         file_path = os.path.join(app.config['PRIMARY_FILE_UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
 
-        # return render_template('index.html', message='原视频文件上传成功')
-
 
 # 上传剪辑后的视频文件
 def upload_process_file(file):
@@ -141,33 +162,37 @@ def upload_process_file(file):
         file_path = os.path.join(app.config['PROCESS_FILE_UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
 
-        # return render_template('index.html', message='剪辑后的视频文件上传成功')
-
 
 # 多线程获取最大分数值
-def worker_image_max_score(primary_output_folder, primary_image_files, process_file_name):
-    # print(f"获取最大分数 {processFileName} 开始")
-
+def worker_image_max_score(futures_primary_images, process_img):
     future_array = []
-    for primary_image_file in primary_image_files:
-        primary_file_name = primary_output_folder + primary_image_file
-        future = executor_sub.submit(worker_image_score, primary_file_name, process_file_name)
+    for futures_primary_image in futures_primary_images:
+        future = executor_sub.submit(worker_image_score, futures_primary_image, process_img.img)
         future_array.append(future)
-        # score = imageHash.comparisonHashImage(primaryFileName, processFileName)
 
     score_array = []
     for future in future_array:
         score = future.result()
         score_array.append(round(score, 2))
     max_score = max(score_array)
-    print(f"获取最大分数 {process_file_name} {max_score} 结束")
+    print(f"获取最大分数 {process_img.file_path_name} {max_score} 结束")
     return max_score
 
 
-def worker_image_score(primary_file_name, process_file_name):
-    score = imageHash.comparison_hash_image(primary_file_name, process_file_name)
+def worker_image_score(primary_file_name_image, process_file_name_image):
+    score = imageHash.comparison_hash_imread(primary_file_name_image, process_file_name_image)
     return score
 
+#读取剪辑后视频图片img
+def worker_process_imread(file_path_name):
+    img = cv2.imread(file_path_name)
+    process_img = Process_img(img, file_path_name)
+    return process_img
+
+#读取原视频图片img
+def worker_imread(file_path_name):
+    img = cv2.imread(file_path_name)
+    return img
 
 # 删除文件夹下的文件
 def delete_folder(folder_path):
@@ -189,6 +214,15 @@ def create_folder_if_not_exists(folder_path):
     else:
         print(f"Folder '{folder_path}' already exists.")
 
+#剪辑后的视频图片对象包含路径和img
+class Process_img:
+    img = None
+    file_path_name = None
+
+    # 构造方法，用于初始化对象的属性
+    def __init__(self, img, file_path_name):
+        self.img = img
+        self.file_path_name = file_path_name
 
 if __name__ == '__main__':
     app.run(debug=True, port=APP_PORT)

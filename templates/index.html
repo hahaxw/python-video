@@ -4,21 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文件上传</title>
+    <style>
+        /* 添加一些样式来美化输入框 */
+        input:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
-    <h1>文件上传</h1>
-    <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
-        <p>原视频：<input type="file" name="primaryMultipartFile" accept=".mp4, .avi, .mkv"></p>
-        <p>剪辑后的视频：<input type="file" name="processMultipartFile" accept=".mp4, .avi, .mkv"></p>
-        <p><input type="submit" value="Upload" onclick="showWaitPage()"></p>
+    <h1 style="font-size:70px;">文件上传</h1>
+    <form method="POST" id="myForm" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
+        <p style="font-size:50px;">原视频：<input type="file" style="font-size:50px;" id = "primaryMultipartFile" name="primaryMultipartFile" accept=".mp4, .avi, .mkv"></p>
+        <p style="font-size:50px;">剪辑后的视频：<input type="file" style="font-size:50px;" id = "processMultipartFile" name="processMultipartFile" accept=".mp4, .avi, .mkv"></p>
+        <p><input type="submit" style="font-size:50px;" id ="videoSubmit" value="提交" onclick="showWaitPage()"></p>
     </form>
     <div id="waitPage" style="display: none;">
-        <p>请等待，文件正在上传中...</p>
+        <p style="color:red;font-size:70px;">请等待，文件正在上传中...</p>
     </div>
 
     <script>
         function showWaitPage() {
+            // 获取文件上传表单
+            var form = document.getElementById('myForm');
+            form.submit();
             document.getElementById('waitPage').style.display = 'block';
+            // 获取输入框元素
+            var primaryMultipartFile = document.getElementById('primaryMultipartFile');
+            // 禁用输入框
+            primaryMultipartFile.disabled = true;
+            // 获取输入框元素
+            var processMultipartFile = document.getElementById('processMultipartFile');
+            // 禁用输入框
+            processMultipartFile.disabled = true;
+            // 获取输入框元素
+            var videoSubmit = document.getElementById('videoSubmit');
+            // 禁用输入框
+            videoSubmit.disabled = true;
+
         }
     </script>
 </body>

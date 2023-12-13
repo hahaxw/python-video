@@ -44,10 +44,10 @@ def extract_frames(video_path, output_folder):
     print(f"抽取了 {frame_count} 帧，保存在 {output_folder} 中。")
 
 # 视频文件路径
-video_path = "D:\\video\\processFile\\video\\1_1.mp4"
+# video_path = "D:\\video\\processFile\\video\\1_1.mp4"
 
 # 输出文件夹路径
-output_folder = "D:\\video\\processFile\\image"
+# output_folder = "D:\\video\\processFile\\image"
 
 # 执行抽帧操作
 # extract_frames(video_path, output_folder)

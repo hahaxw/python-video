@@ -6,7 +6,7 @@
 </head>
 <body>
 {% if message %}
-        <p>{{ message }}</p>
+        <p>{{ message | safe }}</p>
 {% endif %}
 </body>
 </html>
